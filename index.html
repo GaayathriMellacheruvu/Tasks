@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+</head>
+<body>
+    <h1>Speech-to-Text Task Manager</h1>
+
+    <form id="usernameForm">
+        <label for="username">Enter your username:</label>
+        <input type="text" id="username" required>
+        <button type="button" onclick="submitUsername()">Submit</button>
+    </form>
+
+    <div id="taskManager" style="display: none;">
+        <div>
+            <label for="manualTask">Enter your task manually:</label>
+            <input type="text" id="manualTask">
+            <button type="button" onclick="saveManualTask()">Save Task</button>
+        </div>
+
+        <div>
+            <label>Enter your task using the microphone:</label>
+            <button type="button" onclick="startRecording()">Start Recording 🎙</button>
+            <div id="spokenTask"></div>
+            <button type="button" onclick="saveSpokenTask()">Save Task</button>
+        </div>
+
+        <div id="taskList"></div>
+    </div>
+
+    <script>
+        var username;
+
+        function submitUsername() {
+            username = document.getElementById('username').value.trim();
+            if (username !== '') {
+                document.getElementById('usernameForm').style.display = 'none';
+                document.getElementById('taskManager').style.display = 'block';
+                listTasks();
+            }
+        }
+
+        function saveManualTask() {
+            var manualTask = document.getElementById('manualTask').value.trim();
+            if (manualTask !== '') {
+                fetch(`http://127.0.0.1:8000/add_task/?user_name=${username}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        task_text: manualTask
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Task added successfully:', data);
+                    listTasks();
+                    document.getElementById('manualTask').value = '';
+                })
+                .catch(error => console.error('Error adding task:', error));
+            }
+        }
+
+        function startRecording() {
+            // Implement speech recognition functionality here
+            console.log('Start recording...');
+        }
+
+        function saveSpokenTask() {
+            var spokenTask = document.getElementById('spokenTask').innerText.trim();
+            if (spokenTask !== '') {
+                fetch(`http://127.0.0.1:8000/add_task/?user_name=${username}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        task_text: spokenTask
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Task added successfully:', data);
+                    listTasks();
+                })
+                .catch(error => console.error('Error adding task:', error));
+            }
+        }
+
+        function listTasks() {
+            fetch(`http://127.0.0.1:8000/list_tasks/?user_name=${username}`)
+                .then(response => response.json())
+                .then(data => {
+                    const taskList = document.getElementById('taskList');
+                    taskList.innerHTML = '';
+
+                    data.tasks.forEach(task => {
+                        const listItem = document.createElement('div');
+                        listItem.innerHTML = `${task.task_text} <button onclick="deleteTask('${task._id}')">Delete</button>`;
+                        taskList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error fetching tasks:', error));
+        }
+
+        function deleteTask(taskId) {
+            fetch(`http://127.0.0.1:8000/delete_task/${taskId}/?user_name=${username}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Task deleted successfully');
+                    listTasks();
+                } else {
+                    console.error('Error deleting task:', response.statusText);
+                }
+            })
+            .catch(error => console.error('Error deleting task:', error));
+        }
+    </script>
+</body>
+</html>
