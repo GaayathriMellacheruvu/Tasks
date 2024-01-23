@@ -4,31 +4,142 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        #container {
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 80%;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #taskManager {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .task-input {
+            margin-bottom: 20px;
+        }
+
+        .task-list {
+            text-align: left;
+        }
+
+        .task-item {
+            margin-bottom: 10px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-item img {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+
+        .delete-button {
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .delete-button:hover {
+            background-color: #c0392b;
+        }
+    </style>
 </head>
 <body>
-    <h1>Speech-to-Text Task Manager</h1>
+    <div id="container">
+        <h1>Task Manager</h1>
 
-    <form id="usernameForm">
-        <label for="username">Enter your username:</label>
-        <input type="text" id="username" required>
-        <button type="button" onclick="submitUsername()">Submit</button>
-    </form>
+        <form id="usernameForm">
+            <label for="username">Enter your username:</label>
+            <input type="text" id="username" required>
+            <button type="button" onclick="submitUsername()">Submit</button>
+        </form>
 
-    <div id="taskManager" style="display: none;">
-        <div>
-            <label for="manualTask">Enter your task manually:</label>
-            <input type="text" id="manualTask">
-            <button type="button" onclick="saveManualTask()">Save Task</button>
+        <div id="taskManager">
+            <div class="task-input">
+                <label for="manualTask">Enter your task manually:</label>
+                <input type="text" id="manualTask">
+                <button type="button" onclick="saveManualTask()">Save Task</button>
+            </div>
+
+            <div class="task-input">
+                <label>Enter your task using the microphone:</label>
+                <button type="button" onclick="startRecording()">Start Recording 🎙</button>
+                <div id="spokenTask"></div>
+                <button type="button" onclick="saveSpokenTask()">Save Task</button>
+            </div>
+
+            <div class="task-list" id="taskList"></div>
         </div>
-
-        <div>
-            <label>Enter your task using the microphone:</label>
-            <button type="button" onclick="startRecording()">Start Recording 🎙</button>
-            <div id="spokenTask"></div>
-            <button type="button" onclick="saveSpokenTask()">Save Task</button>
-        </div>
-
-        <div id="taskList"></div>
     </div>
 
     <script>
