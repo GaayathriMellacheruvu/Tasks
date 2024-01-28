@@ -321,55 +321,56 @@
         }
 
         function addTask(taskText) {
-            fetch(`http://task-ease-7f6t.onrender.com/add_task/?user_name=${username}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    task_text: taskText
-                })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Task added successfully:', data);
-                    listTasks();
-                    clearTaskInputs();
-                })
-                .catch(error => console.error('Error adding task:', error));
-        }
+    fetch(`https://task-ease-7f6t.onrender.com/add_task/?user_name=${username}`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            task_text: taskText
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Task added successfully:', data);
+        listTasks();
+        clearTaskInputs();
+    })
+    .catch(error => console.error('Error adding task:', error));
+}
 
-        function listTasks() {
-            fetch(`http://task-ease-7f6t.onrender.com/list_tasks/?user_name=${username}`)
-                .then(response => response.json())
-                .then(data => {
-                    const taskList = document.getElementById('taskList');
-                    taskList.innerHTML = '';
+function listTasks() {
+    fetch(`https://task-ease-7f6t.onrender.com/list_tasks/?user_name=${username}`)
+        .then(response => response.json())
+        .then(data => {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = '';
 
-                    data.tasks.forEach(task => {
-                        const listItem = document.createElement('div');
-                        listItem.className = 'task-item';
-                        listItem.innerHTML = `<div class="task-item-text">${task.task_text}</div><button class="delete-button" onclick="deleteTask('${task._id}')">Delete</button>`;
-                        taskList.appendChild(listItem);
-                    });
-                })
-                .catch(error => console.error('Error fetching tasks:', error));
-        }
+            data.tasks.forEach(task => {
+                const listItem = document.createElement('div');
+                listItem.className = 'task-item';
+                listItem.innerHTML = `<div class="task-item-text">${task.task_text}</div><button class="delete-button" onclick="deleteTask('${task._id}')">Delete</button>`;
+                taskList.appendChild(listItem);
+            });
+        })
+        .catch(error => console.error('Error fetching tasks:', error));
+}
 
-        function deleteTask(taskId) {
-            fetch(`http://task-ease-7f6t.onrender.com/delete_task/${taskId}/?user_name=${username}`, {
-                method: 'DELETE'
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log('Task deleted successfully');
-                    listTasks();
-                } else {
-                    console.error('Error deleting task:', response.statusText);
-                }
-            })
-            .catch(error => console.error('Error deleting task:', error));
+function deleteTask(taskId) {
+    fetch(`https://task-ease-7f6t.onrender.com/delete_task/${taskId}/?user_name=${username}`, {
+        method: 'DELETE'
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log('Task deleted successfully');
+            listTasks();
+        } else {
+            console.error('Error deleting task:', response.statusText);
         }
+    })
+    .catch(error => console.error('Error deleting task:', error));
+}
 
         function clearTaskInputs() {
             document.getElementById('manualTask').value = '';
