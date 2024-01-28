@@ -321,7 +321,7 @@
         }
 
         function addTask(taskText) {
-            fetch(`http://127.0.0.1:8000/add_task/?user_name=${username}`, {
+            fetch(`http://task-ease-7f6t.onrender.com/add_task/?user_name=${username}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -340,7 +340,7 @@
         }
 
         function listTasks() {
-            fetch(`http://127.0.0.1:8000/list_tasks/?user_name=${username}`)
+            fetch(`http://task-ease-7f6t.onrender.com/list_tasks/?user_name=${username}`)
                 .then(response => response.json())
                 .then(data => {
                     const taskList = document.getElementById('taskList');
@@ -357,7 +357,7 @@
         }
 
         function deleteTask(taskId) {
-            fetch(`http://127.0.0.1:8000/delete_task/${taskId}/?user_name=${username}`, {
+            fetch(`http://task-ease-7f6t.onrender.com/delete_task/${taskId}/?user_name=${username}`, {
                 method: 'DELETE'
             })
             .then(response => {
