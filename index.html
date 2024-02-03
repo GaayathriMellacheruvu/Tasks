@@ -5,189 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TASKEASE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #dcdcdc; /* Metal color */
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-
-        #container {
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 800px;
-            padding: 30px;
-            box-sizing: border-box;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: center; /* Center horizontally */
-            margin-top: 50%; /* Center vertically */
-            margin-bottom: center; /* Center vertically */
-        }
-
-        #menu {
-            background-color: #2f3539;
-            color: #fff;
-            padding: 20px;
-            width: 200px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        #menu h2 {
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-
-        #menu ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            text-align: center;
-        }
-
-        #menu li {
-            margin-bottom: 10px;
-        }
-
-        #menu a {
-            text-decoration: none;
-            color: #fff;
-            font-size: 18px;
-            transition: color 0.3s;
-        }
-
-        #menu a:hover {
-            color: #555;
-        }
-
-        #content {
-            flex-grow: 1;
-            padding-left: 200px;
-            align-items: center;
-            /* Adjust padding to keep content visible beside the menu */
-        }
-
-        h1 {
-            color: #333;
-            font-size: 2em;
-            margin-bottom: 20px;
-        }
-
-        #usernameForm {
-            margin-top: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 10px;
-            color: #555;
-        }
-
-        input {
-            width: calc(100% - 16px);
-            padding: 8px;
-            margin-bottom: 15px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        button {
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        #taskManager {
-            display:none;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
-
-        .task-input {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .task-list {
-            text-align: left;
-            width: 100%;
-        }
-
-        .task-item {
-            margin-bottom: 20px;
-            padding: 20px;
-            background-color: #f0f0f0;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-
-        .task-item-text {
-            color: #000;
-            text-align: left;
-            flex-grow: 1;
-            margin-right: 20px;
-        }
-
-        .delete-button {
-            background-color: #dc3545;
-            color: #fff;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out;
-        }
-
-        .delete-button:hover {
-            background-color: #bb2d3b;
-        }
-
-        #spokenTask {
-            margin-top: 10px;
-            font-style: italic;
-            color: #555;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="menu">
-        <h2>MENU</MENU></h2>
+        <h2>MENU</h2>
         <ul>
             <li><a href="#" onclick="showManualText()">Manual Text</a></li>
             <li><a href="#" onclick="showSpeechToText()">Speech to Text</a></li>
@@ -225,12 +47,12 @@
                 <!-- View Tasks Section -->
                 <div class="task-list" id="viewTasksSection" style="display: none;">
                     <h2>Your Tasks</h2>
+                    <button class="delete-all-button" onclick="deleteAllTasks()">Delete All</button>
                     <div id="taskList"></div>
                 </div>
             </div>
         </div>
     </div>
-
 
     <script>
         var username;
@@ -298,6 +120,7 @@
                 addTask(spokenTask);
             }
         }
+
         function showManualText() {
             hideAllSections();
             document.getElementById('manualTextSection').style.display = 'block';
@@ -320,57 +143,110 @@
             document.getElementById('viewTasksSection').style.display = 'none';
         }
 
-        function addTask(taskText) {
-    fetch(`https://task-ease-7f6t.onrender.com/add_task/?user_name=${username}`, {
-        method: 'POST',
-        mode: 'cors',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            task_text: taskText
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Task added successfully:', data);
-        listTasks();
-        clearTaskInputs();
-    })
-    .catch(error => console.error('Error adding task:', error));
-}
-
-function listTasks() {
-    fetch(`https://task-ease-7f6t.onrender.com/list_tasks/?user_name=${username}`)
-        .then(response => response.json())
-        .then(data => {
-            const taskList = document.getElementById('taskList');
-            taskList.innerHTML = '';
-
-            data.tasks.forEach(task => {
-                const listItem = document.createElement('div');
-                listItem.className = 'task-item';
-                listItem.innerHTML = `<div class="task-item-text">${task.task_text}</div><button class="delete-button" onclick="deleteTask('${task._id}')">Delete</button>`;
-                taskList.appendChild(listItem);
-            });
-        })
-        .catch(error => console.error('Error fetching tasks:', error));
-}
-
-function deleteTask(taskId) {
-    fetch(`https://task-ease-7f6t.onrender.com/delete_task/${taskId}/?user_name=${username}`, {
-        method: 'DELETE'
-    })
-    .then(response => {
-        if (response.ok) {
-            console.log('Task deleted successfully');
-            listTasks();
-        } else {
-            console.error('Error deleting task:', response.statusText);
+        function addTaskButtons(task) {
+            const listItem = document.createElement('div');
+            listItem.className = 'task-item';
+            listItem.innerHTML = `
+                <div class="task-item-text">${task.task_text}</div>
+                <button class="update-button" onclick="showUpdateTask('${task._id}', '${task.task_text}')">Update</button>
+                <button class="delete-button" onclick="deleteTask('${task._id}')">Delete</button>
+            `;
+            return listItem;
         }
-    })
-    .catch(error => console.error('Error deleting task:', error));
-}
+
+        function listTasks() {
+            fetch(`https://task-ease-7f6t.onrender.com/list_tasks/?user_name=${username}`)
+                .then(response => response.json())
+                .then(data => {
+                    const taskList = document.getElementById('taskList');
+                    taskList.innerHTML = '';
+
+                    data.tasks.forEach(task => {
+                        const listItem = addTaskButtons(task);
+                        taskList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error fetching tasks:', error));
+        }
+
+        function addTask(taskText) {
+            fetch(`https://task-ease-7f6t.onrender.com/add_task/?user_name=${username}`, {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    task_text: taskText
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Task added successfully:', data);
+                listTasks();
+                clearTaskInputs();
+            })
+            .catch(error => console.error('Error adding task:', error));
+        }
+
+        function deleteTask(taskId) {
+            fetch(`https://task-ease-7f6t.onrender.com/delete_task/${taskId}/?user_name=${username}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Task deleted successfully');
+                    listTasks();
+                } else {
+                    console.error('Error deleting task:', response.statusText);
+                }
+            })
+            .catch(error => console.error('Error deleting task:', error));
+        }
+
+        function deleteAllTasks() {
+            fetch(`https://task-ease-7f6t.onrender.com/delete_all_tasks/?user_name=${username}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('All tasks deleted successfully');
+                    listTasks();
+                } else {
+                    console.error('Error deleting all tasks:', response.statusText);
+                }
+            })
+            .catch(error => console.error('Error deleting all tasks:', error));
+        }
+
+        function showUpdateTask(taskId, taskText) {
+            const updatedTaskText = prompt('Update Task:', taskText);
+            if (updatedTaskText !== null) {
+                updateTask(taskId, updatedTaskText);
+            }
+        }
+
+        function updateTask(taskId, updatedTaskText) {
+            fetch(`https://task-ease-7f6t.onrender.com/update_task/${taskId}/?user_name=${username}`, {
+                method: 'PUT',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    task_text: updatedTaskText
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Task updated successfully');
+                    listTasks();
+                } else {
+                    console.error('Error updating task:', response.statusText);
+                }
+            })
+            .catch(error => console.error('Error updating task:', error));
+        }
 
         function clearTaskInputs() {
             document.getElementById('manualTask').value = '';
