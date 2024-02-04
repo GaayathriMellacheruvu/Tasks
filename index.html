@@ -7,33 +7,34 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
-    <style>/* --- General Styles --- */
+    <styles>/* --- General Styles --- */
 body {
     font-family: 'Georgia', serif;
-    background-color: #947575;
+    background: linear-gradient(45deg, #a28181, #6d5e5e);
     margin: 0;
     padding: 0;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
+    height: 100vh;
+    color: #010101;
 }
 
 #container {
-    background-color: #fff;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    width: 100%;
-    max-width: 1200px;
-    padding: 40px;
-    box-sizing: content-box;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    width: 80%;
+    max-width: 800px;
+    padding: 30px;
+    box-sizing:content-box;
     text-align: center;
-    display:contents; /* Use flex to center the container horizontally */
+    display:contents;
     flex-direction: column;
     align-items: center;
-    margin: auto; /* Set margin to auto to center horizontally */
 }
+
 /* --- Menu Styles --- */
 #menu {
     background-color: #463f3f;
@@ -100,12 +101,12 @@ h1 {
 label {
     display: block;
     margin-bottom: 15px;
-    color: #555;
+    color: #020202;
     font-weight: bold;
 }
 
 input {
-    width: 100%; /* Set the width to 100% */
+    width: 40%; /* Set the width to 100% */
     padding: 12px;
     margin-bottom: 20px;
     box-sizing: border-box;
@@ -145,8 +146,7 @@ button:hover {
     background-color: #f9f9f9;
     display: contents;
 }
-
-</style>
+</styles>
 <body>
     <div id="menu">
         <h2>MENU</h2>
@@ -167,28 +167,31 @@ button:hover {
                 <button type="button" onclick="submitUsername()">Submit</button>
             </form>
 
-            <div id="taskManager">
-                <!-- Manual Text Section -->
+            <div id="taskManager" style="display: none;">
                 <div class="task-input" id="manualTextSection" style="display: none;">
                     <label for="manualTask">Enter your task manually:</label>
                     <input type="text" id="manualTask">
                     <button type="button" onclick="saveManualTask()">Save Task</button>
+                    <div id="manualTextLoader" style="display: none;">Saving...</div>
                 </div>
 
-                <!-- Speech to Text Section -->
                 <div class="task-input" id="speechToTextSection" style="display: none;">
                     <label>Enter your task using the microphone:</label>
                     <button type="button" onclick="startRecording()">Start Recording 🎙</button>
                     <button type="button" onclick="stopRecording()">Stop Recording 🛑</button>
                     <div id="spokenTask"></div>
                     <button type="button" onclick="saveSpokenTask()">Save Task</button>
+                    <div id="spokenTextLoader" style="display: none;">Saving...</div>
                 </div>
 
-                <!-- View Tasks Section -->
                 <div class="task-list" id="viewTasksSection" style="display: none;">
                     <h2>Your Tasks</h2>
                     <button class="delete-all-button" onclick="deleteAllTasks()">Delete All</button>
                     <div id="taskList"></div>
+                </div>
+
+                <div id="taskSavedMessage" style="display: none;">
+                    <p>Task saved successfully!</p>
                 </div>
             </div>
         </div>
@@ -205,13 +208,17 @@ button:hover {
                 document.getElementById('usernameForm').style.display = 'none';
                 document.getElementById('taskManager').style.display = 'block';
                 listTasks();
+                showManualText(); // Display Manual Text section by default
             }
         }
 
         function saveManualTask() {
-            var manualTask = document.getElementById('manualTask').value.trim();
-            if (manualTask !== '') {
-                addTask(manualTask);
+            if (username) {
+                var manualTask = document.getElementById('manualTask').value.trim();
+                if (manualTask !== '') {
+                    document.getElementById('manualTextLoader').style.display = 'block';
+                    addTask(manualTask, 'manualTextLoader');
+                }
             }
         }
 
@@ -256,8 +263,9 @@ button:hover {
             stopRecording();
 
             var spokenTask = spokenTaskDiv.innerText.trim();
-            if (spokenTask !== '') {
-                addTask(spokenTask);
+            if (username && spokenTask !== '') {
+                document.getElementById('spokenTextLoader').style.display = 'block';
+                addTask(spokenTask, 'spokenTextLoader');
             }
         }
 
@@ -283,15 +291,26 @@ button:hover {
             document.getElementById('viewTasksSection').style.display = 'none';
         }
 
-        function addTaskButtons(task) {
-            const listItem = document.createElement('div');
-            listItem.className = 'task-item';
-            listItem.innerHTML = `
-                <div class="task-item-text">${task.task_text}</div>
-                <button class="update-button" onclick="showUpdateTask('${task._id}', '${task.task_text}')">Update</button>
-                <button class="delete-button" onclick="deleteTask('${task._id}')">Delete</button>
-            `;
-            return listItem;
+        function addTask(taskText, loaderId) {
+            fetch(`https://task-ease-7f6t.onrender.com/add_task/?user_name=${username}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    task_text: taskText
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Task added successfully:', data);
+                    listTasks();
+                    clearTaskInputs();
+                })
+                .catch(error => console.error('Error adding task:', error))
+                .finally(() => {
+                    document.getElementById(loaderId).style.display = 'none';
+                });
         }
 
         function listTasks() {
@@ -302,61 +321,47 @@ button:hover {
                     taskList.innerHTML = '';
 
                     data.tasks.forEach(task => {
-                        const listItem = addTaskButtons(task);
+                        const listItem = document.createElement('div');
+                        listItem.className = 'task-item';
+                        listItem.innerHTML = `
+                            <div class="task-item-text">${task.task_text}</div>
+                            <button class="update-button" onclick="showUpdateTask('${task._id}', '${task.task_text}')">Update</button>
+                            <button class="delete-button" onclick="deleteTask('${task._id}')">Delete</button>
+                        `;
                         taskList.appendChild(listItem);
                     });
                 })
                 .catch(error => console.error('Error fetching tasks:', error));
         }
 
-        function addTask(taskText) {
-            fetch(`https://task-ease-7f6t.onrender.com/add_task/?user_name=${username}`, {
-                method: 'POST',
-                mode: 'cors',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    task_text: taskText
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Task added successfully:', data);
-                listTasks();
-                clearTaskInputs();
-            })
-            .catch(error => console.error('Error adding task:', error));
-        }
-
         function deleteTask(taskId) {
             fetch(`https://task-ease-7f6t.onrender.com/delete_task/${taskId}/?user_name=${username}`, {
                 method: 'DELETE'
             })
-            .then(response => {
-                if (response.ok) {
-                    console.log('Task deleted successfully');
-                    listTasks();
-                } else {
-                    console.error('Error deleting task:', response.statusText);
-                }
-            })
-            .catch(error => console.error('Error deleting task:', error));
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Task deleted successfully');
+                        listTasks();
+                    } else {
+                        console.error('Error deleting task:', response.statusText);
+                    }
+                })
+                .catch(error => console.error('Error deleting task:', error));
         }
 
         function deleteAllTasks() {
             fetch(`https://task-ease-7f6t.onrender.com/delete_all_tasks/?user_name=${username}`, {
                 method: 'DELETE'
             })
-            .then(response => {
-                if (response.ok) {
-                    console.log('All tasks deleted successfully');
-                    listTasks();
-                } else {
-                    console.error('Error deleting all tasks:', response.statusText);
-                }
-            })
-            .catch(error => console.error('Error deleting all tasks:', error));
+                .then(response => {
+                    if (response.ok) {
+                        console.log('All tasks deleted successfully');
+                        listTasks();
+                    } else {
+                        console.error('Error deleting all tasks:', response.statusText);
+                    }
+                })
+                .catch(error => console.error('Error deleting all tasks:', error));
         }
 
         function showUpdateTask(taskId, taskText) {
@@ -377,15 +382,15 @@ button:hover {
                     task_text: updatedTaskText
                 })
             })
-            .then(response => {
-                if (response.ok) {
-                    console.log('Task updated successfully');
-                    listTasks();
-                } else {
-                    console.error('Error updating task:', response.statusText);
-                }
-            })
-            .catch(error => console.error('Error updating task:', error));
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Task updated successfully');
+                        listTasks();
+                    } else {
+                        console.error('Error updating task:', response.statusText);
+                    }
+                })
+                .catch(error => console.error('Error updating task:', error));
         }
 
         function clearTaskInputs() {
