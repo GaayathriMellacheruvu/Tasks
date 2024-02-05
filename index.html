@@ -298,7 +298,7 @@ button:hover {
     }
 
     function addTask(taskText, loaderId) {
-        fetch(`https://task-ease-wv50.onrender.com/tasks/add_task/?user_name=${username}`, {
+        fetch(`https://https://task-ease-wv50.onrender.com/tasks/add_task/?user_name=${username}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -320,7 +320,7 @@ button:hover {
     }
 
     function listTasks() {
-        fetch(`https://task-ease-wv50.onrender.com/tasks/list_tasks/?user_name=${username}`)
+        fetch(`https://https://task-ease-wv50.onrender.com/tasks/list_tasks/?user_name=${username}`)
             .then(response => response.json())
             .then(data => {
                 const taskList = document.getElementById('taskList');
@@ -341,7 +341,7 @@ button:hover {
     }
 
     function deleteTask(taskId) {
-        fetch(`https://task-ease-wv50.onrender.com/tasks/delete_task/${taskId}/?user_name=${username}`, {
+        fetch(`https://https://task-ease-wv50.onrender.com/tasks/delete_task/${taskId}/?user_name=${username}`, {
             method: 'DELETE'
         })
             .then(response => {
@@ -356,7 +356,7 @@ button:hover {
     }
 
     function deleteAllTasks() {
-        fetch(`https://task-ease-wv50.onrender.com/tasks/delete_all_tasks/?user_name=${username}`, {
+        fetch(`https://https://task-ease-wv50.onrender.com/tasks/delete_all_tasks/?user_name=${username}`, {
             method: 'DELETE'
         })
             .then(response => {
@@ -378,7 +378,7 @@ button:hover {
     }
 
     function updateTask(taskId, updatedTaskText) {
-        fetch(`https://task-ease-wv50.onrender.com/tasks/update_task/${taskId}/?user_name=${username}`, {
+        fetch(`https://https://task-ease-wv50.onrender.com/tasks/update_task/${taskId}/?user_name=${username}`, {
             method: 'PUT',
             mode: 'cors',
             headers: {
