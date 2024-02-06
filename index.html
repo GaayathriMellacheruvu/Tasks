@@ -350,6 +350,34 @@
                 })
                 .catch(error => console.error('Error deleting task:', error));
         }
+                function showUpdateTask(taskId, taskText) {
+            const updatedTaskText = prompt('Update Task:', taskText);
+            if (updatedTaskText !== null) {
+                updateTask(taskId, updatedTaskText);
+            }
+        }
+
+        function updateTask(taskId, updatedTaskText) {
+            fetch(`https://task-ease-wv50.onrender.com/tasks/update_task/${taskId}/?user_name=${username}`, {
+                method: 'PUT',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    task_text: updatedTaskText
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Task updated successfully');
+                        listTasks();
+                    } else {
+                        console.error('Error updating task:', response.statusText);
+                    }
+                })
+                .catch(error => console.error('Error updating task:', error));
+        }
 
         function deleteAllTasks() {
             fetch(`https://task-ease-wv50.onrender.com/tasks/delete_all_tasks/?user_name=${username}`, {
