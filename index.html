@@ -5,156 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaskEase</title>
-    <style>
-        /* --- General Styles --- */
-        body {
-            font-family: 'Georgia', serif;
-            background: linear-gradient(45deg, #a28181, #6d5e5e);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            color: #010101;
-        }
-
-        #container {
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-            width: 80%;
-            max-width: 80%; /* Changed to percentage */
-            padding: 5%;
-            box-sizing: content-box;
-            text-align: center;
-            display: contents;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* --- Menu Styles --- */
-        #menu {
-            background-color: #463f3f;
-            color: #fff;
-            padding: 30px;
-            width: 15%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: width 0.3s ease-in-out;
-        }
-
-        #menu h2 {
-            margin-bottom: 30px;
-            font-size: 28px;
-        }
-
-        #menu ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            text-align: center;
-        }
-
-        #menu li {
-            margin-bottom: 15px;
-        }
-
-        #menu a {
-            text-decoration: none;
-            color: #b69898;
-            font-size: 20px;
-            transition: color 0.3s;
-        }
-
-        #menu a:hover {
-            color: #463f3f;
-        }
-
-
-        /* --- Content Styles --- */
-        #content {
-            flex-grow: 1;
-            padding-left: 15%;
-            align-items: center;
-            transition: padding-left 0.3s ease-in-out;
-        }
-
-        #menu.open ~ #content {
-            padding-left: 20%; /* Changed to percentage */
-        }
-
-        h1 {
-            color: #333;
-            font-size: 2.5em; /* Changed to viewport width units */
-            margin-bottom: 50px; /* Changed to percentage */
-        }
-
-        /* --- Input and Button Styles --- */
-        label {
-            display: block;
-            margin-bottom: 15px; /* Changed to percentage */
-            color: #020202;
-            font-weight: bold;
-        }
-
-        input {
-            width: 30%; /* Set the width to 40% */
-            padding: 12px;
-            margin-bottom: 10px; /* Changed to percentage */
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 2em; /* Changed to viewport width units */
-            font-family: inherit;
-            align-items: center;
-            align-self: center;
-        }
-
-        button {
-            background-color: #3498db;
-            color: #fff;
-            padding: 1% 1%; /* Changed to percentage */
-            border: none;
-            border-radius: 2vw; /* Changed to viewport width units */
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out;
-        }
-
-        button:hover {
-            background-color: #2980b9;
-        }
-
-        /* --- Task Manager Styles --- */
-        #taskManager {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            display: contents;
-        }
-
-        /* --- Task Item Styles --- */
-        .task-item {
-            margin-bottom: 5%; /* Changed to percentage */
-            padding: 5%;
-            background-color: #f9f9f9;
-            display: contents;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
-
 
 <body>
     <div id="menu">
         <h2>MENU</h2>
         <ul>
+            <li><a href="#" onclick="showLogin()">Login</a></li>
+            <li><a href="#" onclick="showRegister()">Register</a></li>
             <li><a href="#" onclick="showManualText()">Manual Text</a></li>
             <li><a href="#" onclick="showSpeechToText()">Speech to Text</a></li>
             <li><a href="#" onclick="showViewTasks()">View Tasks</a></li>
@@ -162,18 +22,35 @@
         </ul>
     </div>
 
+
     <div id="content">
         <div id="container">
             <h1>TASKEASE</h1>
 
-            <form id="usernameForm">
-                <label for="username">Enter your username:</label>
-                <input type="text" id="username" required>
-                <button type="button" onclick="submitUsername()">Submit</button>
-            </form>
+            <div id="loginForm" style="display: none;">
+                <h2>Login</h2>
+                <form id="loginForm">
+                    <label for="loginUsername">Username:</label>
+                    <input type="text" id="loginUsername" required>
+                    <button type="button" onclick="login()">Login</button>
+                    <div id="loginMessage"></div>
+                </form>
+            </div>
+
+            <div id="registerForm" style="display: none;">
+                <h2>Register</h2>
+                <form id="registerForm">
+                    <label for="registerUsername">Username:</label>
+                    <input type="text" id="registerUsername" required>
+                    <button type="button" onclick="register()">Register</button>
+                    <div id="registerMessage"></div>
+                </form>
+            </div>
 
             <div id="taskManager" style="display: none;">
+                <!-- Task input sections -->
                 <div class="task-input" id="manualTextSection" style="display: none;">
+                    <!-- Manual Text input -->
                     <label for="manualTask">Enter your task manually:</label>
                     <input type="text" id="manualTask">
                     <button type="button" onclick="saveManualTask()">Save Task</button>
@@ -181,6 +58,7 @@
                 </div>
 
                 <div class="task-input" id="speechToTextSection" style="display: none;">
+                    <!-- Speech to Text input -->
                     <label>Enter your task using the microphone:</label>
                     <button type="button" onclick="startRecording()">Start Recording 🎙</button>
                     <button type="button" onclick="stopRecording()">Stop Recording 🛑</button>
@@ -190,6 +68,7 @@
                 </div>
 
                 <div class="task-input" id="chatSection" style="display: none;">
+                    <!-- Chat input -->
                     <label for="chatInput">Chat with the Task Manager Assistant:</label>
                     <input type="text" id="chatInput">
                     <button type="button" onclick="chatWithAssistant()">Send</button>
@@ -198,11 +77,13 @@
                 </div>
 
                 <div class="task-list" id="viewTasksSection" style="display: none;">
+                    <!-- Task list -->
                     <h2>Your Tasks</h2>
                     <button class="delete-all-button" onclick="deleteAllTasks()">Delete All</button>
                     <div id="taskList"></div>
                 </div>
 
+                <!-- Task saved message -->
                 <div id="taskSavedMessage" style="display: none;">
                     <p>Task saved successfully!</p>
                 </div>
@@ -214,6 +95,83 @@
         var username;
         var recognition;
         var spokenTaskDiv = document.getElementById('spokenTask');
+    
+        function showLogin() {
+            hideAllSections();
+            document.getElementById('loginForm').style.display = 'block';
+        }
+    
+        function showRegister() {
+            hideAllSections();
+            document.getElementById('registerForm').style.display = 'block';
+        }
+    
+        function login() {
+            var loginUsername = document.getElementById('loginUsername').value.trim();
+            if (loginUsername !== '') {
+                fetch(`https://task-ease-wv50.onrender.com/tasks/login/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: loginUsername
+                    })
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            username = loginUsername;
+                            document.getElementById('loginMessage').innerText = 'Login successful';
+                            document.getElementById('loginMessage').style.color = 'green';
+                            document.getElementById('loginForm').style.display = 'none';
+                            document.getElementById('taskManager').style.display = 'block';
+                            showManualText();
+                        } else if (response.status === 401) {
+                            document.getElementById('loginMessage').innerText = 'Login failed. Username does not exist.';
+                            document.getElementById('loginMessage').style.color = 'red';
+                        } else {
+                            document.getElementById('loginMessage').innerText = 'Login failed. Please try again.';
+                            document.getElementById('loginMessage').style.color = 'red';
+                        }
+                    })
+                    .catch(error => console.error('Error logging in:', error));
+            }
+        }
+    
+        function register() {
+            var registerUsername = document.getElementById('registerUsername').value.trim();
+            if (registerUsername !== '') {
+                fetch(`https://task-ease-wv50.onrender.com/tasks/register/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: registerUsername
+                    })
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            username = registerUsername;
+                            document.getElementById('registerMessage').innerText = 'Registration successful';
+                            document.getElementById('registerMessage').style.color = 'green';
+                            document.getElementById('registerForm').style.display = 'none';
+                            document.getElementById('taskManager').style.display = 'block';
+                            showManualText();
+                        } else if (response.status === 400) {
+                            document.getElementById('registerMessage').innerText = 'Registration failed. Username already exists.';
+                            document.getElementById('registerMessage').style.color = 'red';
+                        } else {
+                            document.getElementById('registerMessage').innerText = 'Registration failed. Please try again.';
+                            document.getElementById('registerMessage').style.color = 'red';
+                        }
+                    })
+                    .catch(error => console.error('Error registering:', error));
+            }
+        }
+        // Other functions for task management and interaction
+
+
 
         function submitUsername() {
             username = document.getElementById('username').value.trim();
@@ -304,11 +262,14 @@
         }
 
         function hideAllSections() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'none';
             document.getElementById('manualTextSection').style.display = 'none';
             document.getElementById('speechToTextSection').style.display = 'none';
             document.getElementById('chatSection').style.display = 'none';
             document.getElementById('viewTasksSection').style.display = 'none';
         }
+
 
         function addTask(taskText, loaderId) {
             fetch(`https://task-ease-wv50.onrender.com/tasks/add_task/?user_name=${username}`, {
